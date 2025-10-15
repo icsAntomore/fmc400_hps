@@ -36,6 +36,7 @@ SECTIONS
     __text_start__ = .;
     *(.text.startup*)
     *(.init)
+    KEEP(*(.text.__core1_unwind_stub))
     *(.text*)
     *(.fini)
     __text_end__ = .;
@@ -53,7 +54,7 @@ SECTIONS
   {
     . = ALIGN(4);
     __exidx_start = .;
-    *(.ARM.exidx*)
+     KEEP(*(.ARM.exidx*))
     __exidx_end = .;
   } > DDR_PRIV
 
