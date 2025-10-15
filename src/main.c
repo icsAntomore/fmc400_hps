@@ -191,13 +191,14 @@ int main(int argc, char** argv)
     ALT_STATUS_CODE s = qspi_read(buf,len,CORE1_QSPI_SRC);
 
     if (s == ALT_E_SUCCESS) {
-    	alt_printf("\r\nQSPI read OK. First 16 bytes => ");
+    	printf("\r\nQSPI read OK");
+    	/*alt_printf("\r\nQSPI read OK. First 16 bytes => ");
     	for (int i = 0; i < 16; ++i)
-    		alt_printf("%02x ", buf[i]);
-    	alt_printf("\n");
+    		alt_printf("%02x ", buf[i]);*/
+    	printf("\n");
     }
     else {
-    	alt_printf("\nQSPI read Fail");
+    	printf("\nQSPI read Fail");
 
     }
 

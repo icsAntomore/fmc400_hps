@@ -53,9 +53,25 @@ void arm_enable_smp_and_scu(void)
     __asm__ volatile("mcr p15,0,%0,c1,c0,1"::"r"(actlr));
     dsb(); isb();
 
-    volatile uint32_t *SCU_CTRL = (volatile uint32_t *)(uintptr_t)(A9_SCU_BASE + 0x00u);
+   /* volatile uint32_t *SCU_CTRL = (volatile uint32_t *)(uintptr_t)(A9_SCU_BASE + 0x00u);
     *SCU_CTRL |= 1u; // enable SCU
-    dsb(); isb();
+    dsb(); isb();*/
+
+    /*
+     * Alcuni SoC (incluso Arria 10) generano un abort quando il core secondario
+     * prova ad accedere ai registri privati della SCU.  In tal caso occorre
+     * abilitare la SCU esclusivamente dal core 0, mentre è comunque necessario
+     * impostare il bit SMP sugli altri core.
+    */
+    uint32_t mpidr;
+    __asm__ volatile("mrc p15,0,%0,c0,c0,5" : "=r"(mpidr));
+    if ((mpidr & 0x3u) == 0u) {
+    	volatile uint32_t *SCU_CTRL = (volatile uint32_t *)(uintptr_t)(A9_SCU_BASE + 0x00u);
+        uint32_t val = *SCU_CTRL;
+        val |= 1u; // enable SCU
+        *SCU_CTRL = val;
+        dsb(); isb();
+    }
 }
 
 // ---------------------------
