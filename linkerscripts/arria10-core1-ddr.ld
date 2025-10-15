@@ -41,6 +41,14 @@ SECTIONS
     __text_end__ = .;
   } > DDR_PRIV
 
+ .ARM.extab :
+  {
+    . = ALIGN(4);
+    __extab_start = .;
+    KEEP(*(.ARM.extab*))
+    __extab_end = .;
+  } > DDR_PRIV
+  
   .ARM.exidx :
   {
     . = ALIGN(4);

@@ -24,3 +24,18 @@ __core1_unwind_stub:
     .fnend
 
     .size   __core1_unwind_stub, .-__core1_unwind_stub
+
+ /*
+     * Binutils 2.34+ warns when the .ARM.exidx section does not have
+     * a valid sh_link pointing at a companion .ARM.extab section.
+     * The directives above generate the exidx records, but nothing in
+     * this bare-metal image emits an extab.  Provide an explicit (and
+     * intentionally empty) one here so that the linker always sets the
+     * sh_link field correctly and the build stays warning-free.
+     */
+    .section .ARM.extab, "a", %progbits
+    .align  2
+    .global __core1_extab_start
+    .global __core1_extab_end
+__core1_extab_start:
+__core1_extab_end:

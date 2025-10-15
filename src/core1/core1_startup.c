@@ -5,7 +5,7 @@ extern unsigned long __data_start__, __data_end__, __data_load__;
 extern void core1_main(void);
 
 /* Entry linkata nel linker: ENTRY(_start_core1) */
-static void core1_startup_body(void)
+static void __attribute__((used)) core1_startup_body(void)
 {
 
     /* azzera BSS */
