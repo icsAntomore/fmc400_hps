@@ -1,7 +1,7 @@
 #include <sys/unistd.h>
 #include <sys/stat.h>
 #include <errno.h>
-#ifdef __NEWLIB__
+#if !defined(CORE1)
 #include <stdio.h>
 #endif
 #include "uart_stdio.h"
@@ -54,10 +54,10 @@ ALT_STATUS_CODE uart_stdio_init_uart1(uint32_t baud)
         * (_impure_ptr, setvbuf).  Rendiamo quindi la chiamata facoltativa
         * e la eseguiamo solo se la toolchain fornisce newlib.
         */
-   #if defined(__NEWLIB__)
-      setvbuf(stdout, NULL, _IONBF, 0);
-      setvbuf(stderr, NULL, _IONBF, 0);
-   #endif
+#if !defined(CORE1)
+    setvbuf(stdout, NULL, _IONBF, 0);
+    setvbuf(stderr, NULL, _IONBF, 0);
+#endif
 
 
     return ALT_E_SUCCESS;

@@ -84,7 +84,8 @@ LINKER_SCRIPT1 := linkerscripts/arria10-core1-ddr.ld
 
 # -------- Flags comuni --------
 MULTILIBFLAGS := -mcpu=cortex-a9 -mfloat-abi=softfp -mfpu=neon
-CFLAGS_COMMON := -g -O0 -Wall $(MULTILIBFLAGS) $(INCLUDE_DIRS) -D$(ALT_DEVICE_FAMILY) $(UART_DEFINES) -D$(ALT_DEVICE) -DCORE1 -fdata-sections -ffunction-sections -ffreestanding -fno-pic -fno-pie
+#CFLAGS_COMMON := -g -O0 -Wall $(MULTILIBFLAGS) $(INCLUDE_DIRS) -D$(ALT_DEVICE_FAMILY) $(UART_DEFINES) -D$(ALT_DEVICE) -DCORE1 -fdata-sections -ffunction-sections -ffreestanding -fno-pic -fno-pie
+CFLAGS_COMMON := -g -O0 -Wall $(MULTILIBFLAGS) $(INCLUDE_DIRS) -D$(ALT_DEVICE_FAMILY) $(UART_DEFINES) -D$(ALT_DEVICE) -fdata-sections -ffunction-sections -ffreestanding -fno-pic -fno-pie
 #LDFLAGS_COMMON := $(MULTILIBFLAGS) -B$(NEWLIB_ROOT)/lib --sysroot=$(NEWLIB_ROOT)/lib --specs=nosys.specs -Wl,--gc-sections
 LDFLAGS_COMMON := $(MULTILIBFLAGS) --specs=nosys.specs -Wl,--gc-sections
 ifneq ($(strip $(NEWLIB_ROOT)),)

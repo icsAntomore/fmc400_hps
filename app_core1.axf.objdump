@@ -7998,9 +7998,9 @@ ALT_STATUS_CODE uart_stdio_init_uart1(uint32_t baud)
  10050a4:	0a000001 	beq	10050b0 <uart_stdio_init_uart1+0xc8>
  10050a8:	e51b3008 	ldr	r3, [fp, #-8]
  10050ac:	ea000000 	b	10050b4 <uart_stdio_init_uart1+0xcc>
-    //   setvbuf(stdout, NULL, _IONBF, 0);
-     //  setvbuf(stderr, NULL, _IONBF, 0);
-   #endif
+    setvbuf(stdout, NULL, _IONBF, 0);
+    setvbuf(stderr, NULL, _IONBF, 0);
+#endif
 
 
     return ALT_E_SUCCESS;
