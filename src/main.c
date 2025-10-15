@@ -55,6 +55,27 @@ static void load_core1_image(void)
     __asm__ volatile("dsb sy; isb" ::: "memory");
 }
 
+void core1_on(void)
+{
+	//#ifdef CORE1
+
+	    // 1) Inizializza la shared memory
+		//    (MMU off + cache off su Core0 = già NC, quindi scrivi direttamente)
+		SHM_CTRL->magic = SHM_MAGIC_BOOT;
+		SHM_CTRL->core0_ready = 0u;
+		SHM_CTRL->core1_ready = 0u;
+		SHM_CTRL->trig_count  = 0u;
+		SHM_CTRL->log_head = SHM_CTRL->log_tail = 0u;
+
+		load_core1_image();
+
+		if (core1_boot_from_ddr() != 0) {
+			alt_printf("\r\nCore1 boot failed");
+		}
+		SHM_CTRL->core0_ready = 1u;
+		//if (SHM_CTRL->core1_ready == 1) //core 1 ready
+	//#endif
+}
 
 int main(int argc, char** argv)
 {
@@ -183,8 +204,8 @@ int main(int argc, char** argv)
     }
 
 
-    sched_insert(SCHED_PERIODIC,ledsys,300);
-    //sched_insert(SCHED_PERIODIC,change_pulse,5000);
+
+
 
     const size_t   len  = 1024u;
     uint8_t buf[len];
@@ -202,29 +223,9 @@ int main(int argc, char** argv)
 
     }
 
-
-//#ifdef CORE1
-
-    // 1) Inizializza la shared memory
-	//    (MMU off + cache off su Core0 = già NC, quindi scrivi direttamente)
-	SHM_CTRL->magic = SHM_MAGIC_BOOT;
-	SHM_CTRL->core0_ready = 0u;
-	SHM_CTRL->core1_ready = 0u;
-	SHM_CTRL->trig_count  = 0u;
-	SHM_CTRL->log_head = SHM_CTRL->log_tail = 0u;
-
-	load_core1_image();
-	//start_core1(CORE1_ENTRY_ADDR);
-
-	SHM_CTRL->core0_ready = 1u;
-
-	 if (core1_boot_from_ddr() != 0) {
-	        alt_printf("Core1 boot failed\n");
-	    }
-
-	//if (SHM_CTRL->core1_ready == 1) //core 1 ready
-//#endif
-
+	sched_insert(SCHED_PERIODIC,ledsys,300);
+	    //sched_insert(SCHED_PERIODIC,change_pulse,5000);
+	sched_insert(SCHED_ONETIME,core1_on,2000);
 
     if (status == ALT_E_SUCCESS) {
         while (1) {

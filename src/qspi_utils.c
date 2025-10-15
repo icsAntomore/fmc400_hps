@@ -125,7 +125,7 @@ int core1_load_from_qspi_to_ddr(void)
 
     s = alt_qspi_init();
     if (s != ALT_E_SUCCESS) {
-        alt_printf("QSPI init fail: %d\n", (int)s);
+        alt_printf("\r\nQSPI init fail: %d", (int)s);
         return -1;
     }
 
@@ -134,7 +134,7 @@ int core1_load_from_qspi_to_ddr(void)
     /* Lettura bloccante di 0x20000 bytes da 0x00B00000 in DDR */
     s = alt_qspi_read((void *)CORE1_DDR_BASE, CORE1_QSPI_SRC, CORE1_IMAGE_SIZE);
     if (s != ALT_E_SUCCESS) {
-        alt_printf("QSPI read fail: %d\n", (int)s);
+        alt_printf("\r\nQSPI read fail: %d", (int)s);
         (void)alt_qspi_uninit();
         return -2;
     }
@@ -178,6 +178,6 @@ int core1_boot_from_ddr(void)
 
     core1_release_from_reset();
 
-    alt_printf("Core1 avviato da DDR @0x%08x (size 0x%08x)\n", CORE1_DDR_BASE, CORE1_IMAGE_SIZE);
+    alt_printf("\r\nCore1 avviato da DDR @0x%08x (size 0x%08x)", CORE1_DDR_BASE, CORE1_IMAGE_SIZE);
     return 0;
 }
