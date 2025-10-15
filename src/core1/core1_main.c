@@ -74,7 +74,8 @@ void core1_main(void)
     while (SHM_CTRL->core0_ready != 1u)        { /* spin */ }
 
     // Saluta e dichiara “ready”
-    printf("\n[Core1] hello from DDR low. SHM @ 0x%08X ready.", SHM_BASE);
+    printf("\n[Core1] hello from DDR ready.");
+    //printf("\n[Core1] hello from DDR low. SHM @ 0x%08X ready.", SHM_BASE);
     SHM_CTRL->core1_ready = 1u;
     __asm__ volatile("dmb sy" ::: "memory");
 
