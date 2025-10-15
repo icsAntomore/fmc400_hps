@@ -1,6 +1,13 @@
 // src/core1/libc_min.c
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <stdarg.h>
+
+#include "alt_printf.h"
+
+#undef printf
+#undef vprintf
 
 void *memset(void *s, int c, size_t n)
 {
@@ -28,4 +35,19 @@ void *memmove(void *dst, const void *src, size_t n)
         for (size_t i = n; i > 0; --i) d[i-1] = s[i-1];
     }
     return dst;
+}
+
+
+int vprintf(const char *format, va_list args)
+{
+    return alt_vfprintf(DEFAULT_TERM, format, args);
+}
+
+int printf(const char *format, ...)
+{
+    va_list args;
+    va_start(args, format);
+    int rc = alt_vfprintf(DEFAULT_TERM, format, args);
+    va_end(args);
+    return rc;
 }

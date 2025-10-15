@@ -27,7 +27,6 @@
 #include "core1_start_a10.h"
 #include "qspi.h"
 
-#define CORE1_ENTRY_ADDR   0x01000000u
 
 extern volatile uint32_t *g_arm_pio_data;
 extern volatile uint32_t *g_arm_msgdma0_csr;
@@ -36,24 +35,6 @@ extern volatile uint32_t *g_arm_msgdma2_csr;
 extern volatile uint32_t *g_arm_msgdma3_csr;
 extern volatile uint32_t *g_arm_msgdma4_csr;
 extern volatile uint32_t *g_arm_f2h_irq0_en;
-
-extern const unsigned char _binary_app_core1_bin_start[];
-extern const unsigned char _binary_app_core1_bin_end[];
-extern const unsigned char _binary_app_core1_bin_size[];
-
-#define CORE1_ENTRY_PHYS   0x01000000u   /* ORIGIN(DDR_PRIV) del linker di core1 */
-
-static void load_core1_image(void)
-{
-    const unsigned char *src = _binary_app_core1_bin_start;
-    const unsigned char *end = _binary_app_core1_bin_end;
-    volatile unsigned char *dst = (volatile unsigned char *)(uintptr_t)CORE1_ENTRY_PHYS;
-
-    while (src < end) {
-        *dst++ = *src++;
-    }
-    __asm__ volatile("dsb sy; isb" ::: "memory");
-}
 
 void core1_on(void)
 {
@@ -66,8 +47,6 @@ void core1_on(void)
 		SHM_CTRL->core1_ready = 0u;
 		SHM_CTRL->trig_count  = 0u;
 		SHM_CTRL->log_head = SHM_CTRL->log_tail = 0u;
-
-		load_core1_image();
 
 		if (core1_boot_from_ddr() != 0) {
 			alt_printf("\r\nCore1 boot failed");

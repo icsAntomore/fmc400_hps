@@ -3,10 +3,7 @@
 * ICS Technologies SPA. All Rights Reserved.
 * 
 *****************************************************************************/
-#include <string.h>
 #include <inttypes.h>
-#include "alt_printf.h"
-#include <stdbool.h>
 #include "alt_clock_manager.h"
 #include "alt_timers.h"
 #include "alt_interrupt.h"
@@ -21,7 +18,7 @@
 #include "arm_mem_regions.h"
 #include "msgdma.h"
 #include "dma_layout.h"
-
+#include <stdio.h>
 #include "arm_mem_regions.h"
 #include "shared_ipc.h"
 
@@ -52,6 +49,7 @@ static inline void set_vbar(void *addr) {
     __asm__ volatile ("isb");
 }
 
+
 void core1_main(void)
 {
 	set_vbar(&_vectors);
@@ -74,8 +72,10 @@ void core1_main(void)
     while (SHM_CTRL->core0_ready != 1u)        { /* spin */ }
 
     // Saluta e dichiara “ready”
-    printf("\n[Core1] hello from DDR ready.");
-    printf("\n[Core1] hello from DDR low. SHM @ 0x%08X ready.", SHM_BASE);
+
+    printf("\n\rHello from HPS - Core 1. SHM @ 0x");
+    (void)uart_stdio_write_hex32((uint32_t)SHM_BASE);
+    printf(" - Now it's ready.");
     SHM_CTRL->core1_ready = 1u;
     __asm__ volatile("dmb sy" ::: "memory");
 

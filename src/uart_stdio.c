@@ -65,6 +65,40 @@ ALT_STATUS_CODE uart_stdio_init_uart1(uint32_t baud)
 
 void uart_stdio_set_crlf(int enable) { s_crlf = enable ? 1 : 0; }
 
+static ALT_STATUS_CODE uart_stdio_write_raw(char ch)
+{
+    return alt_16550_fifo_write(&s_uart1, &ch, 1);
+}
+
+ALT_STATUS_CODE uart_stdio_write_char(char ch)
+{
+    if (s_crlf && ch == '\n') {
+        ALT_STATUS_CODE st = uart_stdio_write_raw('\r');
+        if (st != ALT_E_SUCCESS) return st;
+    }
+    return uart_stdio_write_raw(ch);
+}
+
+ALT_STATUS_CODE uart_stdio_write_string(const char *str)
+{
+    while (*str) {
+        ALT_STATUS_CODE st = uart_stdio_write_char(*str++);
+        if (st != ALT_E_SUCCESS) return st;
+    }
+    return ALT_E_SUCCESS;
+}
+
+ALT_STATUS_CODE uart_stdio_write_hex32(uint32_t value)
+{
+    for (int shift = 28; shift >= 0; shift -= 4) {
+        uint32_t nibble = (value >> shift) & 0xFu;
+        char ch = (char)(nibble < 10 ? ('0' + nibble) : ('A' + (nibble - 10)));
+        ALT_STATUS_CODE st = uart_stdio_write_char(ch);
+        if (st != ALT_E_SUCCESS) return st;
+    }
+    return ALT_E_SUCCESS;
+}
+
 /* ---------------- newlib syscalls redirect ---------------- */
 
 int _write(int fd, const void *buf, size_t cnt)
