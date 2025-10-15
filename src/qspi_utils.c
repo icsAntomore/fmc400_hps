@@ -148,10 +148,17 @@ int core1_load_from_qspi_to_ddr(void)
     return 0;
 }
 
+/* Mailbox condiviso usato dal CRT di Core1 per conoscere l'entry point. */
+#define CORE1_MAILBOX_ADDR   ((volatile uint32_t *)0x003FF000u)
+
 /* 2) Programma l'indirizzo di start di CPU1 nel SYSMGR */
 void core1_set_start_addr(uint32_t addr)
 {
     alt_write_word(A10_SYSMGR_CORE1_START_ADDR_ADDR, addr);
+    /* Il CRT di Core1 legge l'entry point da questo mailbox molto presto.
+          Se non lo aggiorniamo prima di togliere il reset, Core1 rimane fermo
+          in attesa che qualcuno lo scriva. */
+    *CORE1_MAILBOX_ADDR = addr;
     __asm__ volatile ("dsb sy\nisb");
 }
 
