@@ -25,6 +25,20 @@
 #include "arm_mem_regions.h"
 #include "shared_ipc.h"
 
+
+static inline void init_data(void)
+{
+    extern uint8_t __data_start__;
+    extern uint8_t __data_end__;
+    extern uint8_t __data_load__;
+
+    const uint8_t *src = &__data_load__;
+    for (uint8_t *dst = &__data_start__; dst < &__data_end__; ++dst, ++src) {
+        *dst = *src;
+    }
+}
+
+
 static inline void zero_bss(void)
 {
     extern uint8_t __bss_start__;
@@ -41,6 +55,7 @@ static inline void set_vbar(void *addr) {
 void core1_main(void)
 {
 	set_vbar(&_vectors);
+	init_data();
     zero_bss();
 
     // MMU di Core1 (crea le regioni: DDR WBWA + SHM NON-CACHEABLE + Device)

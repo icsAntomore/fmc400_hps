@@ -7,6 +7,10 @@ extern void core1_main(void);
 /* Entry linkata nel linker: ENTRY(_start_core1) */
 static void __attribute__((used)) core1_startup_body(void)
 {
+	 /* copia le sezioni .data dall'area di load (flash/DDR alta) all'area di run */
+	for (unsigned long *src = &__data_load__, *dst = &__data_start__; dst < &__data_end__; ++src, ++dst) {
+		*dst = *src;
+	}
 
     /* azzera BSS */
     for (unsigned long *p = &__bss_start__; p < &__bss_end__; ++p) {
