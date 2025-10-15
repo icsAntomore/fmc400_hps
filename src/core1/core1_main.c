@@ -38,7 +38,6 @@ static inline void set_vbar(void *addr) {
     __asm__ volatile ("isb");
 }
 
-
 void core1_main(void)
 {
 	set_vbar(&_vectors);
@@ -49,7 +48,11 @@ void core1_main(void)
 
     // UART (se Core0 l’ha già messa su, puoi solo usare printf;
     // in alternativa, re-inizializza uart1 qui)
-    //uart_stdio_init_uart1(115200);
+    // Il binary di Core1 ha una propria copia di uart_stdio.c, quindi
+    // deve inizializzare il relativo handle della UART prima di usare
+    // printf. Reinizializzare la periferica è sicuro e consente di
+    // condividere la stessa UART con Core0.
+    (void)uart_stdio_init_uart1(115200);
 
     // Attendi che Core0 abbia inizializzato tutto e “aperto” l’handshake
     while (SHM_CTRL->magic != SHM_MAGIC_BOOT) { /* spin */ }

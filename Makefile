@@ -39,6 +39,7 @@ SRC_FILE_CORE1 += $(CORE1_SRC_DIR)/core1_startup.c
 SRC_FILE_CORE1 += $(CORE1_SRC_DIR)/libc_min.c
 SRC_FILE_CORE1 += $(CORE1_SRC_DIR)/core1_exidx_stub.S
 SRC_FILE_CORE1 += arm_mem_regions.c
+SRC_FILE_CORE1 += uart_stdio.c
 
 ELF0 := app_core0.axf
 ELF1 := app_core1.axf
