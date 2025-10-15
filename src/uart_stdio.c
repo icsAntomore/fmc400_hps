@@ -1,7 +1,9 @@
 #include <sys/unistd.h>
 #include <sys/stat.h>
 #include <errno.h>
+#ifdef __NEWLIB__
 #include <stdio.h>
+#endif
 #include "uart_stdio.h"
 
 #include "alt_clock_manager.h"
@@ -45,9 +47,18 @@ ALT_STATUS_CODE uart_stdio_init_uart1(uint32_t baud)
     st = alt_16550_enable(&s_uart1);
     if (st != ALT_E_SUCCESS) return st;
 
-    /* niente buffering su stdout/stderr */
-    setvbuf(stdout, NULL, _IONBF, 0);
-    setvbuf(stderr, NULL, _IONBF, 0);
+    /*
+        * Niente buffering su stdout/stderr.  L'implementazione standard
+        * richiede il supporto della libreria C (newlib) per setvbuf().
+        * Quando si compila senza di essa il linker non trova i simboli
+        * (_impure_ptr, setvbuf).  Rendiamo quindi la chiamata facoltativa
+        * e la eseguiamo solo se la toolchain fornisce newlib.
+        */
+   #if defined(__NEWLIB__)
+      setvbuf(stdout, NULL, _IONBF, 0);
+      setvbuf(stderr, NULL, _IONBF, 0);
+   #endif
+
 
     return ALT_E_SUCCESS;
 }
