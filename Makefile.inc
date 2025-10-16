@@ -79,7 +79,7 @@ MKIMAGE := $(strip $(MKIMAGE))
 CORE1_BIN_OBJ := app_core1_bin.o
 
 # -------- Linker scripts --------
-LINKER_SCRIPT0 := linkerscripts/arria10-core0-ocr.ld
+LINKER_SCRIPT0 := linkerscripts/arria10-core0-ddr.ld
 LINKER_SCRIPT1 := linkerscripts/arria10-core1-ddr.ld
 
 # -------- Flags comuni --------

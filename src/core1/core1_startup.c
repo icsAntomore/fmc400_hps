@@ -43,18 +43,29 @@ static void __attribute__((used, section(".text.startup"))) core1_startup_body(v
  * l'exidx), Core1 parte da codice errato e rimane bloccato.  Forziamo il
  * posizionamento del simbolo nella sezione `.text.startup` che è la
  * prima ad essere emessa dal linker script. */
-void __attribute__((naked, section(".text.startup._start_core1"))) _start_core1(void)
+/*void __attribute__((naked, section(".text.startup._start_core1"))) _start_core1(void)
 {
-    /* set SP in cima alla regione DDR_PRIV */
+    // set SP in cima alla regione DDR_PRIV
     __asm__ volatile (
         "ldr sp, =__stack_top__\n\t"
         "b core1_startup_body\n\t"
         ::: "memory");
-}
-
-
-/*
-void _socfpga_main(void)
-{
-    // NOP: evita di far crashare il linker. Non viene usata.
 }*/
+
+#define SHM_BASE   ((volatile uint32_t*)0x3F000000u) // come nel tuo linker (SHM_BASE)
+#define SHM_PROBE  (*(volatile uint32_t*)(0x3F000000u))  // offset 0
+
+extern unsigned long __stack_top__;
+void _start_core1(void) __attribute__((naked, section(".text.startup._start_core1")));
+void _start_core1(void)
+{
+    __asm__ volatile (
+        "ldr sp, =__stack_top__      \n\t"
+        :
+        :
+        : "memory"
+    );
+    SHM_PROBE = 0xC0DE0001u;   // <<< segnale "sono partito"
+    __asm__ volatile ("dmb sy" ::: "memory");
+    for(;;) __asm__ volatile ("wfi");   // fermo qui: niente MMU/VBAR/UART
+}

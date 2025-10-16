@@ -1,9 +1,10 @@
-OUTPUT_FORMAT("elf32-littlearm", "elf32-bigarm",
-	      "elf32-littlearm")
+OUTPUT_FORMAT("elf32-littlearm", "elf32-bigarm", "elf32-littlearm")
 OUTPUT_ARCH(arm)
 ENTRY(_socfpga_main)
-/* Do we need any of these for elf?
-   __DYNAMIC = 0;    */
+
+__core1_trampoline_base__ = 0xFFE00000;
+__core1_trampoline_size__ = 0x00000040;
+   
 SECTIONS
 {
   /* Read-only sections, merged into text segment: */

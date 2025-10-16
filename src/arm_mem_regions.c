@@ -132,8 +132,8 @@ static ALT_STATUS_CODE create_va_space_core1_ddr(uint32_t **ttb_out)
         // [C1] DDR privata Core1: 0x0100_0000 – 0x3EFF_FFFF (fine esclusa 0x3F00_0000) = 0x3E00_0000
         //     Normal WBWA, non-shareable (codice/dati Core1)
         {
-            .va         = (void*)0x01000000u,
-            .pa         = (void*)0x01000000u,
+            .va         = (void*)0x20000000u,
+            .pa         = (void*)0x20000000u,
             .size       = 0x3E000000u,                 // fino a (0x3F000000 - 1)
             .access     = ALT_MMU_AP_FULL_ACCESS,
             .attributes = ALT_MMU_ATTR_WBA,

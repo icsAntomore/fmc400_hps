@@ -48,13 +48,20 @@ void core1_on(void)
 		SHM_CTRL->trig_count  = 0u;
 		SHM_CTRL->log_head = SHM_CTRL->log_tail = 0u;
 
-		if (core1_boot_from_ddr() != 0) {
+		//if (core1_boot_from_ddr() != 0) {
+		if (core1_boot_minimal_probe() != 0) {
 			alt_printf("\r\nCore1 boot failed");
 		}
 		SHM_CTRL->core0_ready = 1u;
 		//if (SHM_CTRL->core1_ready == 1) //core 1 ready
 	//#endif
 }
+
+static inline uint32_t read_vbar(void){
+	    uint32_t v;
+	    __asm__ volatile ("mrc p15, 0, %0, c12, c0, 0" : "=r"(v));
+	    return v;
+	}
 
 int main(int argc, char** argv)
 {
@@ -132,7 +139,7 @@ int main(int argc, char** argv)
 
     // (opz.) stampa stato per verifica
     arm_cache_dump_status();        // deve mostrare I=0 D=0 BP=0
-    change_pulse();
+    //change_pulse();
 
     /* 1 riceve dati da CPU100 PULSE e REF da mettere in memoria
      * 2 finito questo passaggio abilita il trasferimento DMA dei coefficienti
@@ -192,9 +199,9 @@ int main(int argc, char** argv)
 
     if (s == ALT_E_SUCCESS) {
     	printf("\r\nQSPI read OK");
-    	/*alt_printf("\r\nQSPI read OK. First 16 bytes => ");
+    	alt_printf("\r\nQSPI read OK. First 16 bytes => ");
     	for (int i = 0; i < 16; ++i)
-    		alt_printf("%02x ", buf[i]);*/
+    		alt_printf("%02x ", buf[i]);
     	printf("\n");
     }
     else {
@@ -205,6 +212,13 @@ int main(int argc, char** argv)
 	sched_insert(SCHED_PERIODIC,ledsys,300);
 	    //sched_insert(SCHED_PERIODIC,change_pulse,5000);
 	sched_insert(SCHED_ONETIME,core1_on,2000);
+
+
+
+	alt_printf("\n[DBG] VBAR(core0)=0x%08x", read_vbar());
+	alt_printf("\n[DBG] OCRAM[0]=0x%08x OCRAM[1]=0x%08x",
+	           *(volatile uint32_t*)0xFFE00000u,
+	           *(volatile uint32_t*)0xFFE00004u);
 
     if (status == ALT_E_SUCCESS) {
         while (1) {
